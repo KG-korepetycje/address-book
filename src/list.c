@@ -3,19 +3,25 @@
 #include "list.h"
 
 struct element* create_element(int data) {
-    struct element* element = malloc(sizeof(struct element));
-    if (element != NULL) {
-        element->data = data;
-        element->next = NULL;
-        element->prev = NULL;
+    struct element* p_element = malloc(sizeof(struct element));
+    if (p_element != NULL) {
+        p_element->data = data;
+        p_element->next = NULL;
+        p_element->prev = NULL;
     }
-    return element;
+    return p_element;
 }
 
 
-void append(struct element* head, struct element* element) {
+void append(struct element** head, struct element* element) {
+    if (*head == NULL) {
+        *head = element;
+        (*head)->next = NULL;
+        (*head)->prev = NULL;
+        return;
+    }
 
-    struct element* current = head;
+    struct element* current = *head;
     while(current->next != NULL) {
         current = (*current).next;
     }
@@ -28,6 +34,10 @@ void append(struct element* head, struct element* element) {
 
 
 void print_list(struct element* head) {
+    if (head == NULL) {
+        printf("\nList is empty!\n");
+        return;
+    }
     struct element* current = head;
     int counter = 1;
     while(current != NULL) {
@@ -37,16 +47,17 @@ void print_list(struct element* head) {
         // counter = counter + 1;
         counter++;
     }
+    printf("\n");
 }
 
 
-void free_list(struct element* head) {
-    struct element* current = head;
+void free_list(struct element** head) {
+    struct element* current = *head;
     while(current != NULL) {
         struct element* tmp = current->next;
         free(current);
         current = tmp;
     }
 
-    // *head = NULL;
+    *head = NULL;
 }
