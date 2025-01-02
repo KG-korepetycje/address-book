@@ -10,7 +10,7 @@ cd address-book
 2. Compile/build the project:
 ```sh
 mkdir -p builds
-gcc -Iinclude -o builds/main src/main.c
+gcc -Iinclude -o builds/main src/*.c
 ```
 
 3. Run the project:

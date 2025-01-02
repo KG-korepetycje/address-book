@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include "list.h"
 
-struct element* create_element(int data) {
+struct element* create_element(struct contact data) {
     struct element* p_element = malloc(sizeof(struct element));
     if (p_element != NULL) {
         p_element->data = data;
@@ -13,9 +13,10 @@ struct element* create_element(int data) {
 }
 
 
-void append(struct element** head, struct element* element) {
+void append(struct element** head, struct contact data) {
+    struct element* p_element = create_element(data);
     if (*head == NULL) {
-        *head = element;
+        *head = p_element;
         (*head)->next = NULL;
         (*head)->prev = NULL;
         return;
@@ -27,9 +28,9 @@ void append(struct element** head, struct element* element) {
     }
     // current to teraz ostatni element listy
     // (*current).next = element;
-    current->next = element;
-    element->next = NULL;
-    element->prev = current;
+    current->next = p_element;
+    p_element->next = NULL;
+    p_element->prev = current;
 }
 
 
@@ -41,8 +42,11 @@ void print_list(struct element* head) {
     struct element* current = head;
     int counter = 1;
     while(current != NULL) {
-        printf("\n== %d. ELEMENT ==\n", counter);
-        printf("Data: %d\n", current->data);
+        printf("\n== %d. CONTACT ==\n", counter);
+        printf("Name: %s\n", current->data.name);
+        printf("Surname: %s\n", current->data.surname);
+        printf("Phone: %s\n", current->data.phone);
+        printf("Group: %s\n", current->data.group);
         current = current->next;
         // counter = counter + 1;
         counter++;
