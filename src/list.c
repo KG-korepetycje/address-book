@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include "list.h"
 
 struct element* create_element(struct contact data) {
@@ -34,6 +35,29 @@ void append(struct element** head, struct contact data) {
 }
 
 
+void append_from_csv(struct element** head, char file_path[]) {
+    FILE* p_file;
+    char name[30], surname[30], phone[20], group[50];
+
+    p_file = fopen(file_path, "r");
+    if (p_file == NULL) {
+        perror("Error opening file");
+        return;
+    }
+
+    while (fscanf(p_file, "%[^;];%[^;];%[^;];%[^\n]\n", name, surname, phone, group) == 4) {
+        struct contact data;
+        strcpy(data.name, name);
+        strcpy(data.surname, surname);
+        strcpy(data.phone, phone);
+        strcpy(data.group, group);
+        append(head, data);
+    }
+
+    fclose(p_file);
+}
+
+
 void print_list(struct element* head) {
     if (head == NULL) {
         printf("\nList is empty!\n");
@@ -52,6 +76,33 @@ void print_list(struct element* head) {
         counter++;
     }
     printf("\n");
+}
+
+
+void sort_list(struct element** head, int sort_type) {
+    if (*head == NULL) {
+        printf("\nList is empty!\n");
+        return;
+    }
+
+    struct element* current = *head;
+    int counter = 1;
+    while(current->next != NULL) {
+        if (sort_type == 1 && strcoll((current->data).name, (current->next->data).name) < 0) {
+            
+        }
+        current = current->next;
+    }
+
+    // for (int j = 0; j < (size - 1); j++) {
+    //     for (int i = 0; i < (size - 1); i++) {
+    //         if (t[i] > t[i + 1]) {
+    //             int tmp = t[i + 1];
+    //             t[i + 1] = t[i];
+    //             t[i] = tmp;
+    //         }
+    //     }
+    // }
 }
 
 

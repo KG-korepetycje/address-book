@@ -3,10 +3,43 @@
 #include <string.h>
 
 #include "list.h"
-#include "csv.h"
+// #include "csv.h"
+
+
+void bubble_sort() {
+    int t[5] = {6, 4, 3, 8, 2};
+
+    printf("Before: [ ");
+    for (int i = 0; i < 5; i++) {
+        printf("%d ", t[i]);
+    }
+    printf("]\n");
+
+    int size = 5;
+    int counter = 1;
+
+    for (int j = 0; j < (size - 1); j++) {
+        for (int i = 0; i < (size - 1 - j); i++) {
+            printf("Counter: %d\n", counter);
+            counter++;
+            if (t[i] > t[i + 1]) {
+                int tmp = t[i + 1];
+                t[i + 1] = t[i];
+                t[i] = tmp;
+            }
+        }
+    }
+
+    printf("After: [ ");
+    for (int i = 0; i < 5; i++) {
+        printf("%d ", t[i]);
+    }
+    printf("]\n");
+}
+
 
 int main() {
-    // struct element* head = NULL;
+    struct element* head = NULL;
     // print_list(head);
     // // struct element* head = create_element(123);
     // struct element* elem = create_element(999);
@@ -25,14 +58,19 @@ int main() {
     // print_list(head);
 
     // parse_contact("data/prosta_lista.csv");
-    struct element* head = parse_file_to_list("data/prosta_lista.csv");
-    struct contact data;
-    strcpy(data.name, "Test name");
-    strcpy(data.surname, "Test surname");
-    strcpy(data.phone, "Test phone");
-    strcpy(data.group, "Test group");
-    append(&head, data);
-    print_list(head);
+    // struct element* head = parse_file_to_list("data/prosta_lista.csv");
+
+    // append_from_csv(&head, "data/prosta_lista.csv");
+    // struct contact data;
+    // strcpy(data.name, "Test name");
+    // strcpy(data.surname, "Test surname");
+    // strcpy(data.phone, "Test phone");
+    // strcpy(data.group, "Test group");
+    // append(&head, data);
+    // // append_from_csv(&head, "data/prosta_lista.csv");
+    // print_list(head);
+
+    bubble_sort();
 
     return 0;
 }
