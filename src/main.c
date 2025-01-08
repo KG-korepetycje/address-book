@@ -40,9 +40,6 @@ void bubble_sort() {
 
 int main() {
     struct element* head = NULL;
-    // print_list(head);
-    // // struct element* head = create_element(123);
-    // struct element* elem = create_element(999);
 
     // append(&head, elem);
     // print_list(head);
@@ -60,17 +57,24 @@ int main() {
     // parse_contact("data/prosta_lista.csv");
     // struct element* head = parse_file_to_list("data/prosta_lista.csv");
 
-    // append_from_csv(&head, "data/prosta_lista.csv");
-    // struct contact data;
-    // strcpy(data.name, "Test name");
-    // strcpy(data.surname, "Test surname");
-    // strcpy(data.phone, "Test phone");
-    // strcpy(data.group, "Test group");
-    // append(&head, data);
-    // // append_from_csv(&head, "data/prosta_lista.csv");
-    // print_list(head);
+    append_from_csv(&head, "data/prosta_lista.csv");
+    
+    struct contact data;
+    strcpy(data.name, "Test name");
+    strcpy(data.surname, "Test surname");
+    strcpy(data.phone, "Test phone");
+    strcpy(data.group, "Test group");
+    append(&head, data);
 
-    bubble_sort();
+    printf("Before:\n");
+    print_list(head);
+
+    sort_list(&head, 1);
+
+    printf("After:\n");
+    print_list(head);
+
+    free_list(&head);
 
     return 0;
 }
