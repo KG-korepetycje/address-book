@@ -69,7 +69,7 @@ int main() {
     printf("Before:\n");
     print_list(head);
 
-    sort_list(&head, 1);
+    sort_list(&head, 3);
 
     printf("After:\n");
     print_list(head);

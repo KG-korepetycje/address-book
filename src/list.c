@@ -100,13 +100,29 @@ void sort_list(struct element** head, int sort_type) {
         struct element* current = *head;
 
         while(current->next != NULL && current->next != first_sorted) {
-            printf("Comparing: %s vs %s\n", (current->data).name, (current->next->data).name);
             char* current_str;
             char* next_str;
-            if (sort_type == 1) {
-                current_str = to_lower((current->data).name);
-                next_str = to_lower((current->next->data).name);
+            switch (sort_type) {
+                case 1: {
+                    current_str = to_lower((current->data).name);
+                    next_str = to_lower((current->next->data).name);
+                    break;
+                }
+                case 2: {
+                    current_str = to_lower((current->data).surname);
+                    next_str = to_lower((current->next->data).surname);
+                    break;
+                }
+                case 3: {
+                    current_str = to_lower((current->data).group);
+                    next_str = to_lower((current->next->data).group);
+                }
+                default: {
+                    break;
+                }
             }
+            printf("Comparing: %s vs %s\n", current_str, next_str);
+
             if (strcoll(current_str, next_str) > 0) {
                 if (current->prev == NULL) {
                     current->next->prev = NULL;
