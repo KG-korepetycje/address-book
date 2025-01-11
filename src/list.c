@@ -1,3 +1,4 @@
+#include <ctype.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -79,19 +80,78 @@ void print_list(struct element* head) {
 }
 
 
+char* to_lower(const char* str) {
+    char* lower = strdup(str);
+    for (int i = 0; lower[i]; i++) {
+        lower[i] = tolower(lower[i]);
+    }
+    return lower;
+}
+
+
 void sort_list(struct element** head, int sort_type) {
     if (*head == NULL) {
         printf("\nList is empty!\n");
         return;
     }
 
-    struct element* current = *head;
+    struct element* first_sorted = NULL;
     int counter = 1;
-    while(current->next != NULL) {
-        if (sort_type == 1 && strcoll((current->data).name, (current->next->data).name) < 0) {
-            
+
+    while((*head)->next != first_sorted) {
+        struct element* current = *head;
+
+        while(current->next != NULL && current->next != first_sorted) {
+            char* current_str;
+            char* next_str;
+
+            switch (sort_type)
+            {
+                case 1: {
+                    current_str = to_lower((current->data).name);
+                    next_str = to_lower((current->next->data).name);  
+                    break;
+                }
+                case 2: {
+                    current_str = to_lower((current->data).surname);
+                    next_str = to_lower((current->next->data).surname); 
+                    break;
+                }
+                case 3: {
+                    current_str = to_lower((current->data).group);
+                    next_str = to_lower((current->next->data).group); 
+                    break;
+                }
+                default:
+                    break;
+            }
+
+            printf("Comparing: %s - %s\n", current_str, next_str);
+
+            if (strcoll(current_str, next_str) > 0) {
+                if (current->prev == NULL) {
+                    current->next->prev = NULL;
+                    *head = current->next;
+                }
+                else {
+                    current->prev->next = current->next;
+                    current->next->prev = current->prev;
+                }
+                current->prev = current->next;
+                current->next = current->next->next;
+                current->prev->next = current;
+                if (current->next != NULL) {
+                    current->next->prev = current;
+                }
+            }
+            else {
+                current = current->next;
+            }
+
+            free(current_str);
+            free(next_str);
         }
-        current = current->next;
+        first_sorted = current;
     }
 
     // for (int j = 0; j < (size - 1); j++) {

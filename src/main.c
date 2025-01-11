@@ -60,7 +60,7 @@ int main() {
     // parse_contact("data/prosta_lista.csv");
     // struct element* head = parse_file_to_list("data/prosta_lista.csv");
 
-    // append_from_csv(&head, "data/prosta_lista.csv");
+    append_from_csv(&head, "data/prosta_lista.csv");
     // struct contact data;
     // strcpy(data.name, "Test name");
     // strcpy(data.surname, "Test surname");
@@ -68,9 +68,11 @@ int main() {
     // strcpy(data.group, "Test group");
     // append(&head, data);
     // // append_from_csv(&head, "data/prosta_lista.csv");
-    // print_list(head);
+    sort_list(&head, 1);
+    print_list(head);
 
-    bubble_sort();
+
+    // bubble_sort();
 
     return 0;
 }
