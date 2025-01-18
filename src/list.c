@@ -15,24 +15,97 @@ struct element* create_element(struct contact data) {
 }
 
 
-void append(struct element** head, struct contact data) {
-    struct element* p_element = create_element(data);
+char* to_lower(const char* str) {
+    char* lower = strdup(str);
+    for (int i = 0; lower[i]; i++) {
+        lower[i] = tolower(lower[i]);
+    }
+    return lower;
+}
+
+
+void append(struct element** head, struct contact data, int sort_type) {
+    struct element* new = create_element(data);
     if (*head == NULL) {
-        *head = p_element;
+        *head = new;
         (*head)->next = NULL;
         (*head)->prev = NULL;
         return;
     }
 
     struct element* current = *head;
-    while(current->next != NULL) {
-        current = (*current).next;
+
+    if (sort_type == 0) {
+        while(current->next != NULL) {
+            current = (*current).next;
+        }
+        // current to teraz ostatni element listy
+        current->next = new;
+        new->next = NULL;
+        new->prev = current;
     }
-    // current to teraz ostatni element listy
-    // (*current).next = element;
-    current->next = p_element;
-    p_element->next = NULL;
-    p_element->prev = current;
+    else {
+        while(1) {
+            char* current_str;
+            char* new_str;
+
+            switch (sort_type)
+            {
+                case 1: {
+                    current_str = to_lower((current->data).name);
+                    new_str = to_lower((new->data).name);  
+                    break;
+                }
+                case 2: {
+                    current_str = to_lower((current->data).surname);
+                    new_str = to_lower((new->data).surname); 
+                    break;
+                }
+                case 3: {
+                    current_str = to_lower((current->data).group);
+                    new_str = to_lower((new->data).group); 
+                    break;
+                }
+                default:
+                    break;
+            }
+
+            printf("Comparing: %s - %s\n", new_str, current_str);
+            if (strcoll(new_str, current_str) >= 0) {
+                if (current->next == NULL) {
+                    current->next = new;
+                    new->next = NULL;
+                    new->prev = current;
+
+                    free(current_str);
+                    free(new_str);
+                    return;
+                }
+                else {
+                    current = (*current).next;
+                }
+            }
+            else {
+                if (current->prev == NULL) {
+                    // poczatek listy
+                    current->prev = new;
+                    new->next = current;
+                    new->prev = NULL;
+                    *head = new;
+                }
+                else {
+                    // srodek listy (ale nie koniec!)
+                    current->prev->next = new;
+                    new->next = current;
+                    new->prev = current->prev;
+                    current->prev = new;
+                }
+                free(current_str);
+                free(new_str);
+                return;
+            }
+        }
+    }
 }
 
 
@@ -52,7 +125,7 @@ void append_from_csv(struct element** head, char file_path[]) {
         strcpy(data.surname, surname);
         strcpy(data.phone, phone);
         strcpy(data.group, group);
-        append(head, data);
+        append(head, data, 0);
     }
 
     fclose(p_file);
@@ -77,15 +150,6 @@ void print_list(struct element* head) {
         counter++;
     }
     printf("\n");
-}
-
-
-char* to_lower(const char* str) {
-    char* lower = strdup(str);
-    for (int i = 0; lower[i]; i++) {
-        lower[i] = tolower(lower[i]);
-    }
-    return lower;
 }
 
 
@@ -126,7 +190,7 @@ void sort_list(struct element** head, int sort_type) {
                     break;
             }
 
-            printf("Comparing: %s - %s\n", current_str, next_str);
+            // printf("Comparing: %s - %s\n", current_str, next_str);
 
             if (strcoll(current_str, next_str) > 0) {
                 if (current->prev == NULL) {
@@ -163,6 +227,36 @@ void sort_list(struct element** head, int sort_type) {
     //         }
     //     }
     // }
+}
+
+
+void remove_by_id(struct element** head, int id) {
+    struct element* current = *head;
+    int counter = 1;
+    while((current != NULL) && (id != counter)) {
+        current = current->next;
+        counter++;
+    }
+    if (current == NULL) {
+        printf("\nNo such contact (id = %d)!\n", id);
+        return;
+    }
+    if (current->prev == NULL) {
+        current->next->prev = NULL;
+        *head = current->next;
+    }
+    else {
+        if (current->next == NULL) {
+            current->prev->next = NULL;
+        }
+        else {
+            current->prev->next = current->next;
+            current->next->prev = current->prev;
+        }
+    }
+
+    printf("\nSuccessfully removed contact (id = %d)!\n", id);
+    free(current);
 }
 
 

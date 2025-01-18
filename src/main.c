@@ -38,6 +38,59 @@ void bubble_sort() {
 }
 
 
+void menu(struct element** head) {
+    int choice = -1;
+    int sort_type = 0;
+
+    while (choice != 0) {
+        // printf("\033[H\033[J");  // nie na windowsa
+        printf("Adrress book menu:\n");
+        printf("[0] Exit\n");
+        printf("[1] Append new element\n");
+        printf("[2] Append from csv\n");
+        printf("[3] Print list\n");
+        printf("[4] Sort list\n");
+        printf("[5] Remove from list by ID\n");
+        printf("\nYour choice: ");
+        scanf("%d", &choice);
+
+        switch (choice)
+        {
+            case 0: {
+                return;
+            }
+            case 1: {
+                break;
+            }
+            case 2: {
+                break;
+            }
+            case 3: {
+                print_list(*head);
+                break;
+            }
+            case 4: {
+                printf("\nSort type selection: ");
+                scanf("%d", &sort_type);
+                sort_list(head, sort_type);
+                break;
+            }
+            case 5: {
+                int id;
+                printf("\nContact ID (number from the list): ");
+                scanf("%d", &id);
+                remove_by_id(head, id);
+                break;
+            }
+            default: {
+                printf("Not valid input!\n");
+                break;
+            }
+        }
+    }
+}
+
+
 int main() {
     struct element* head = NULL;
     // print_list(head);
@@ -61,15 +114,23 @@ int main() {
     // struct element* head = parse_file_to_list("data/prosta_lista.csv");
 
     append_from_csv(&head, "data/prosta_lista.csv");
+    // // append_from_csv(&head, "data/prosta_lista.csv");
+    int sort_type = 1;
+    sort_list(&head, sort_type);
+
     // struct contact data;
-    // strcpy(data.name, "Test name");
+    // strcpy(data.name, "Zenon");
     // strcpy(data.surname, "Test surname");
     // strcpy(data.phone, "Test phone");
     // strcpy(data.group, "Test group");
-    // append(&head, data);
-    // // append_from_csv(&head, "data/prosta_lista.csv");
-    sort_list(&head, 1);
-    print_list(head);
+    // append(&head, data, sort_type);
+
+    // // print_list(head);
+    // remove_by_id(&head);
+    // print_list(head);
+    menu(&head);
+
+    free_list(&head);
 
 
     // bubble_sort();
