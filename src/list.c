@@ -16,7 +16,7 @@ struct element* create_element(struct contact data) {
 
 
 char* to_lower(const char* str) {
-    char* lower = strdup(str);
+    char* lower = strdup(str);  // aby nie modyfikowac oryginalu robimy kopie
     for (int i = 0; lower[i]; i++) {
         lower[i] = tolower(lower[i]);
     }
@@ -154,18 +154,17 @@ void print_list(struct element* head) {
 
 
 void sort_list(struct element** head, int sort_type) {
-    if (*head == NULL) {
-        printf("\nList is empty!\n");
+    if (*head == NULL || (*head)->next == NULL) {  // Jesli lista pusta lub ma tylko 1 element to wychodzimy
         return;
     }
 
     struct element* first_sorted = NULL;
     int counter = 1;
 
-    while((*head)->next != first_sorted) {
+    while((*head)->next != first_sorted) {  // Stop jesli drugi element listy jest na swoim miejscu
         struct element* current = *head;
 
-        while(current->next != NULL && current->next != first_sorted) {
+        while(current->next != NULL && current->next != first_sorted) {  // Sprawdzamy czy PRAWY babelek jest NULLem lub jest juz posortowany
             char* current_str;
             char* next_str;
 

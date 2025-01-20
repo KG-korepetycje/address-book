@@ -113,10 +113,12 @@ int main() {
     // parse_contact("data/prosta_lista.csv");
     // struct element* head = parse_file_to_list("data/prosta_lista.csv");
 
-    append_from_csv(&head, "data/prosta_lista.csv");
+    // append_from_csv(&head, "data/prosta_lista.csv");
+    append_from_csv(&head, "data/rozbudowana_lista.csv");
     // // append_from_csv(&head, "data/prosta_lista.csv");
-    int sort_type = 1;
-    sort_list(&head, sort_type);
+    print_list(head);
+    // int sort_type = 1;
+    // sort_list(&head, sort_type);
 
     // struct contact data;
     // strcpy(data.name, "Zenon");
@@ -128,7 +130,7 @@ int main() {
     // // print_list(head);
     // remove_by_id(&head);
     // print_list(head);
-    menu(&head);
+    // menu(&head);
 
     free_list(&head);
 
