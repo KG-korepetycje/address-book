@@ -1,45 +1,14 @@
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-// #include "list.h"
-// #include "csv.h"
-
 #define MAX_NAME_SIZE 30
 #define MAX_SURNAME_SIZE 30
 #define MAX_PHONE_SIZE 20
 #define MAX_GROUP_SIZE 50
-// void bubble_sort() {
-//     int t[5] = {6, 4, 3, 8, 2};
-
-//     printf("Before: [ ");
-//     for (int i = 0; i < 5; i++) {
-//         printf("%d ", t[i]);
-//     }
-//     printf("]\n");
-
-//     int size = 5;
-//     int counter = 1;
-
-//     for (int j = 0; j < (size - 1); j++) {
-//         for (int i = 0; i < (size - 1 - j); i++) {
-//             printf("Counter: %d\n", counter);
-//             counter++;
-//             if (t[i] > t[i + 1]) {
-//                 int tmp = t[i + 1];
-//                 t[i + 1] = t[i];
-//                 t[i] = tmp;
-//             }
-//         }
-//     }
-
-//     printf("After: [ ");
-//     for (int i = 0; i < 5; i++) {
-//         printf("%d ", t[i]);
-//     }
-//     printf("]\n");
-// }
 
 struct contact {
     char name[MAX_NAME_SIZE];
@@ -84,19 +53,19 @@ void to_lower_no_copy(char* str) {
 }
 
 
-void append(struct element** head, struct contact data, int sort_type) {
+int append(struct element** head, struct contact data, int sort_type) {
     struct element* new = create_element(data);
     if (*head == NULL) {
         *head = new;
         (*head)->next = NULL;
         (*head)->prev = NULL;
-        return;
+        return 0;
     }
 
     struct element* current = *head;
 
-    if (sort_type == 0) {
-        while(current->next != NULL) {
+    if (sort_type != 1 && sort_type != 2 && sort_type != 3) {
+        while (current->next != NULL) {
             current = (*current).next;
         }
         // current to teraz ostatni element listy
@@ -105,7 +74,7 @@ void append(struct element** head, struct contact data, int sort_type) {
         new->prev = current;
     }
     else {
-        while(1) {
+        while (1) {
             char* current_str;
             char* new_str;
 
@@ -113,21 +82,19 @@ void append(struct element** head, struct contact data, int sort_type) {
             {
                 case 1: {
                     current_str = to_lower((current->data).name);
-                    new_str = to_lower((new->data).name);  
+                    new_str = to_lower((new->data).name);
                     break;
                 }
                 case 2: {
                     current_str = to_lower((current->data).surname);
-                    new_str = to_lower((new->data).surname); 
+                    new_str = to_lower((new->data).surname);
                     break;
                 }
-                case 3: {
+                default: {
                     current_str = to_lower((current->data).group);
-                    new_str = to_lower((new->data).group); 
+                    new_str = to_lower((new->data).group);
                     break;
                 }
-                default:
-                    break;
             }
 
             if (strcoll(new_str, current_str) >= 0) {
@@ -138,7 +105,7 @@ void append(struct element** head, struct contact data, int sort_type) {
 
                     free(current_str);
                     free(new_str);
-                    return;
+                    return 0;
                 }
                 else {
                     current = (*current).next;
@@ -161,22 +128,25 @@ void append(struct element** head, struct contact data, int sort_type) {
                 }
                 free(current_str);
                 free(new_str);
-                return;
+                return 0;
             }
         }
     }
+    return 0;
 }
 
 
-void append_from_csv(struct element** head, char file_path[], int sort_type) {
+int append_from_csv(struct element** head, char file_path[], int sort_type) {
     FILE* p_file;
-    char name[MAX_NAME_SIZE], surname[MAX_SURNAME_SIZE], phone[MAX_PHONE_SIZE], group[MAX_GROUP_SIZE];
+    char name[MAX_NAME_SIZE] = { 0 };
+    char surname[MAX_SURNAME_SIZE] = { 0 };
+    char phone[MAX_PHONE_SIZE] = { 0 };
+    char group[MAX_GROUP_SIZE] = { 0 };
 
     p_file = fopen(file_path, "r");
     if (p_file == NULL) {
-        // perror("Error opening file");
         printf("\nError opening file\n\n");
-        return;
+        return 1; // 1 oznacza blad
     }
 
     while (fscanf(p_file, "%[^;];%[^;];%[^;];%[^\n]\n", name, surname, phone, group) == 4) {
@@ -189,6 +159,7 @@ void append_from_csv(struct element** head, char file_path[], int sort_type) {
     }
 
     fclose(p_file);
+    return 0;
 }
 
 
@@ -199,7 +170,7 @@ void print_list(struct element* head) {
     }
     struct element* current = head;
     int counter = 1;
-    while(current != NULL) {
+    while (current != NULL) {
         printf("\n== %d. CONTACT ==\n", counter);
         printf("Name: %s\n", current->data.name);
         printf("Surname: %s\n", current->data.surname);
@@ -213,18 +184,22 @@ void print_list(struct element* head) {
 }
 
 
-void sort_list(struct element** head, int sort_type) {
+int sort_list(struct element** head, int sort_type) {
     if (*head == NULL || (*head)->next == NULL) {  // Jesli lista pusta lub ma tylko 1 element to wychodzimy
-        return;
+        return 1;  // 1 oznacza nieposortowanie listy
+    }
+
+    if (sort_type != 1 && sort_type != 2 && sort_type != 3) {  // Jesli jest niewlasciwy typ sortowania to wychodzimy
+        return 1;
     }
 
     struct element* first_sorted = NULL;
     int counter = 1;
 
-    while((*head)->next != first_sorted) {  // Stop jesli drugi element listy jest na swoim miejscu
+    while ((*head)->next != first_sorted) {  // Stop jesli drugi element listy jest na swoim miejscu
         struct element* current = *head;
 
-        while(current->next != NULL && current->next != first_sorted) {  // Sprawdzamy czy PRAWY babelek jest NULLem lub jest juz posortowany
+        while (current->next != NULL && current->next != first_sorted) {  // Sprawdzamy czy PRAWY babelek jest NULLem lub jest juz posortowany
             char* current_str;
             char* next_str;
 
@@ -232,24 +207,20 @@ void sort_list(struct element** head, int sort_type) {
             {
                 case 1: {
                     current_str = to_lower((current->data).name);
-                    next_str = to_lower((current->next->data).name);  
+                    next_str = to_lower((current->next->data).name);
                     break;
                 }
                 case 2: {
                     current_str = to_lower((current->data).surname);
-                    next_str = to_lower((current->next->data).surname); 
+                    next_str = to_lower((current->next->data).surname);
                     break;
                 }
-                case 3: {
+                default: {
                     current_str = to_lower((current->data).group);
-                    next_str = to_lower((current->next->data).group); 
+                    next_str = to_lower((current->next->data).group);
                     break;
                 }
-                default:
-                    break;
             }
-
-            // printf("Comparing: %s - %s\n", current_str, next_str);
 
             if (strcoll(current_str, next_str) > 0) {
                 if (current->prev == NULL) {
@@ -276,29 +247,20 @@ void sort_list(struct element** head, int sort_type) {
         }
         first_sorted = current;
     }
-
-    // for (int j = 0; j < (size - 1); j++) {
-    //     for (int i = 0; i < (size - 1); i++) {
-    //         if (t[i] > t[i + 1]) {
-    //             int tmp = t[i + 1];
-    //             t[i + 1] = t[i];
-    //             t[i] = tmp;
-    //         }
-    //     }
-    // }
+    return 0;
 }
 
 
-void remove_by_id(struct element** head, int id) {
+int remove_by_id(struct element** head, int id) {
     struct element* current = *head;
     int counter = 1;
-    while((current != NULL) && (id != counter)) {
+    while ((current != NULL) && (id != counter)) {
         current = current->next;
         counter++;
     }
     if (current == NULL) {
         printf("\nNo such contact (id = %d)!\n", id);
-        return;
+        return 1; // 1 oznacza, ze nie udalo sie usunac elementu
     }
     if (current->prev == NULL) {
         current->next->prev = NULL;
@@ -314,8 +276,8 @@ void remove_by_id(struct element** head, int id) {
         }
     }
 
-    printf("\nSuccessfully removed contact (id = %d)!\n", id);
     free(current);
+    return 0;
 }
 
 
@@ -326,7 +288,7 @@ void filter_list_by_name_surname(struct element* head, char* filter) {
     }
     struct element* current = head;
     int counter = 1;
-    while(current != NULL) {
+    while (current != NULL) {
         char* lower_name = to_lower((current->data).name);
         char* lower_surname = to_lower((current->data).surname);
 
@@ -343,7 +305,6 @@ void filter_list_by_name_surname(struct element* head, char* filter) {
         free(lower_surname);
         current = current->next;
     }
-    printf("\n");
 }
 
 
@@ -354,7 +315,7 @@ void filter_list_by_group(struct element* head, char* filter) {
     }
     struct element* current = head;
     int counter = 1;
-    while(current != NULL) {
+    while (current != NULL) {
         char* lower_group = to_lower((current->data).group);
 
         if (strstr(lower_group, filter) != NULL) {
@@ -375,7 +336,7 @@ void filter_list_by_group(struct element* head, char* filter) {
 
 void free_list(struct element** head) {
     struct element* current = *head;
-    while(current != NULL) {
+    while (current != NULL) {
         struct element* tmp = current->next;
         free(current);
         current = tmp;
@@ -406,11 +367,11 @@ char* get_user_input(char* prompt, int max_length) {
 int main() {
     struct element* head = NULL;
 
+    char* choice_input = NULL;
     int choice = -1;
     int sort_type = 0;
 
     while (choice != 0) {
-        // printf("\033[H\033[J");  // nie na windowsa
         printf("Adrress book menu:\n");
         printf("[0] Exit\n");
         printf("[1] Append new element\n");
@@ -443,6 +404,7 @@ int main() {
                 char* surname = get_user_input(prompt, MAX_SURNAME_SIZE);
                 if (surname == NULL) {
                     printf("\nFailed to allocate the memory\n");
+                    free(name);
                     break;
                 }
 
@@ -450,6 +412,8 @@ int main() {
                 char* phone = get_user_input(prompt, MAX_PHONE_SIZE);
                 if (phone == NULL) {
                     printf("\nFailed to allocate the memory\n");
+                    free(name);
+                    free(surname);
                     break;
                 }
 
@@ -457,6 +421,9 @@ int main() {
                 char* group = get_user_input(prompt, MAX_GROUP_SIZE);
                 if (group == NULL) {
                     printf("\nFailed to allocate the memory\n");
+                    free(name);
+                    free(surname);
+                    free(phone);
                     break;
                 }
 
@@ -465,12 +432,22 @@ int main() {
                 strcpy(data.surname, surname);
                 strcpy(data.phone, phone);
                 strcpy(data.group, group);
-                append(&head, data, sort_type);
-                
+                int result = append(&head, data, sort_type);
+
                 free(name);
                 free(surname);
                 free(phone);
                 free(group);
+
+                if (result == 0) {
+                    printf("\nNew contact has been added\n");
+                }
+                else {
+                    printf("\nContact has NOT been added (error)\n");
+                }
+                printf("Press ENTER to go back to menu...\n");
+                getchar();
+                system("cls");
                 break;
             }
             case 2: {
@@ -482,12 +459,26 @@ int main() {
                     break;
                 }
 
-                append_from_csv(&head, file_path, sort_type);
+                int result = append_from_csv(&head, file_path, sort_type);
                 free(file_path);
+
+                if (result == 0) {
+                    printf("\nContacts from the file have been added\n");
+                }
+                else {
+                    printf("\nContacts have NOT been added (error)\n");
+                }
+                printf("Press ENTER to go back to menu...\n");
+                getchar();
+                system("cls");
+
                 break;
             }
             case 3: {
                 print_list(head);
+                printf("Press ENTER to go back to menu...\n");
+                getchar();
+                system("cls");
                 break;
             }
             case 4: {
@@ -498,14 +489,43 @@ int main() {
                 printf("[3] By group\n\n");
                 printf("Your choice: ");
                 scanf("%d", &sort_type);
-                sort_list(&head, sort_type);
+                getchar();
+
+                while (sort_type != 0 && sort_type != 1 && sort_type != 2 && sort_type != 3) {
+                    printf("\nInvalid input!");
+                    printf("\nYour choice: ");
+                    scanf("%d", &sort_type);
+                    getchar();
+                }
+                int result = sort_list(&head, sort_type);
+
+                if (result == 0) {
+                    printf("\nList has been sorted\n");
+                }
+                else {
+                    printf("\nList has NOT been sorted\n");
+                }
+                printf("Press ENTER to go back to menu...\n");
+                getchar();
+                system("cls");
                 break;
             }
             case 5: {
                 int id;
                 printf("\nContact ID (number from the list): ");
                 scanf("%d", &id);
-                remove_by_id(&head, id);
+                getchar();
+                int result = remove_by_id(&head, id);
+
+                if (result == 0) {
+                    printf("\nSuccessfully removed contact (id = %d)!\n", id);
+                }
+                else {
+                    printf("\nContact has NOT been removed\n");
+                }
+                printf("Press ENTER to go back to menu...\n");
+                getchar();
+                system("cls");
                 break;
             }
             case 6: {
@@ -519,6 +539,10 @@ int main() {
                 to_lower_no_copy(filter);
                 filter_list_by_name_surname(head, filter);
                 free(filter);
+
+                printf("\n\nPress ENTER to go back to menu...\n");
+                getchar();
+                system("cls");
                 break;
             }
             case 7: {
@@ -532,6 +556,10 @@ int main() {
                 to_lower_no_copy(filter);
                 filter_list_by_group(head, filter);
                 free(filter);
+
+                printf("\n\nPress ENTER to go back to menu...\n");
+                getchar();
+                system("cls");
                 break;
             }
             case 8: {
@@ -548,17 +576,21 @@ int main() {
                         printf("\nSorting by surname is applied (sort_type=2)\n\n");
                         break;
                     }
-                    case 3: {
+                    default: {
                         printf("\nSorting by group is applied (sort_type=3)\n\n");
                         break;
                     }
-                    default:
-                        break;
                 }
+                printf("Press ENTER to go back to menu...\n");
+                getchar();
+                system("cls");
                 break;
             }
             default: {
                 printf("Not valid input!\n");
+                printf("Press ENTER to go back to menu...\n");
+                getchar();
+                system("cls");
                 break;
             }
         }
@@ -567,53 +599,3 @@ int main() {
     free_list(&head);
     return 0;
 }
-
-
-// int main() {
-//     struct element* head = NULL;
-//     // print_list(head);
-//     // // struct element* head = create_element(123);
-//     // struct element* elem = create_element(999);
-
-//     // append(&head, elem);
-//     // print_list(head);
-
-//     // printf("Head: %p\n", head);
-//     // printf("Head->data: %d\n", head->data);
-//     // free_list(&head);
-//     // printf("Head: %p\n", head);
-
-//     // elem = create_element(999);
-//     // append(&head, elem);
-//     // printf("Head: %p\n", head);
-//     // print_list(head);
-
-//     // parse_contact("data/prosta_lista.csv");
-//     // struct element* head = parse_file_to_list("data/prosta_lista.csv");
-
-//     append_from_csv(&head, "data/prosta_lista.csv");
-//     // append_from_csv(&head, "data/rozbudowana_lista.csv");
-//     // // append_from_csv(&head, "data/prosta_lista.csv");
-//     print_list(head);
-//     // int sort_type = 1;
-//     // sort_list(&head, sort_type);
-
-//     // struct contact data;
-//     // strcpy(data.name, "Zenon");
-//     // strcpy(data.surname, "Test surname");
-//     // strcpy(data.phone, "Test phone");
-//     // strcpy(data.group, "Test group");
-//     // append(&head, data, sort_type);
-
-//     // // print_list(head);
-//     // remove_by_id(&head);
-//     // print_list(head);
-//     // menu(&head);
-
-//     free_list(&head);
-
-
-//     // bubble_sort();
-
-//     return 0;
-// }
